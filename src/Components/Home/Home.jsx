@@ -1,209 +1,235 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Circle from "../SidebarContent/Circle";
 import Rectangle from "../SidebarContent/Rectangle";
 
 const Home = () => {
-  const [droppedCircleItems1, setDroppedCircleItems1] = useState(Array(3).fill(null));
-  const [droppedCircleItems2, setDroppedCircleItems2] = useState(Array(3).fill(null));
-  const [droppedRectangleItems, setDroppedRectangleItems] = useState(Array(3).fill(null));
-  const [isCircleDraggingOver1, setIsCircleDraggingOver1] = useState(false);
-  const [isCircleDraggingOver2, setIsCircleDraggingOver2] = useState(false);
-  const [isRectangleDraggingOver, setIsRectangleDraggingOver] = useState(false);
-  const [nextEmptyCircleIndex1, setNextEmptyCircleIndex1] = useState(0);
-  const [nextEmptyCircleIndex2, setNextEmptyCircleIndex2] = useState(0);
-  const [nextEmptyRectangleIndex, setNextEmptyRectangleIndex] = useState(0);
+  const [droppedCircleItemsTop, setDroppedCircleItemsTop] = useState(Array(6).fill(null));
+  const [droppedCircleItemsBottom, setDroppedCircleItemsBottom] = useState(Array(6).fill(null));
+  const [droppedRectangleItems, setDroppedRectangleItems] = useState(Array(2).fill(null));
+  const [hoveredCircleIndexTop, setHoveredCircleIndexTop] = useState(null);
+  const [hoveredCircleIndexBottom, setHoveredCircleIndexBottom] = useState(null);
+  const [hoveredRectangleIndex, setHoveredRectangleIndex] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleDragEndOutside = () => {
+      setIsDragging(false);
+      setHoveredCircleIndexTop(null);
+      setHoveredCircleIndexBottom(null);
+      setHoveredRectangleIndex(null);
+    };
+
+    document.addEventListener("dragend", handleDragEndOutside);
+
+    return () => {
+      document.removeEventListener("dragend", handleDragEndOutside);
+    };
+  }, []);
 
   const handleDragStart = (e, item) => {
+    setIsDragging(true);
     e.dataTransfer.setData("application/react", JSON.stringify(item));
   };
 
   const handleDragEnd = () => {
-    setIsCircleDraggingOver1(false);
-    setIsCircleDraggingOver2(false);
-    setIsRectangleDraggingOver(false);
+    setIsDragging(false);
+    setHoveredCircleIndexTop(null);
+    setHoveredCircleIndexBottom(null);
+    setHoveredRectangleIndex(null);
   };
 
-  const handleCircleDragOver1 = (e) => {
+  const handleCircleDragOverTop = (e) => {
     e.preventDefault();
-    setIsCircleDraggingOver1(true);
-    setIsCircleDraggingOver2(false);
-    setIsRectangleDraggingOver(false);
+    const firstEmptyIndex = droppedCircleItemsTop.findIndex((item) => item === null);
+    if (firstEmptyIndex !== -1) {
+      setHoveredCircleIndexTop(firstEmptyIndex);
+    } else {
+      setHoveredCircleIndexTop(-1); // Set to -1 to indicate that no empty dropbox is available
+    }
   };
 
-  const handleCircleDragOver2 = (e) => {
+  const handleCircleDragOverBottom = (e) => {
     e.preventDefault();
-    setIsCircleDraggingOver2(true);
-    setIsCircleDraggingOver1(false);
-    setIsRectangleDraggingOver(false);
+    const firstEmptyIndex = droppedCircleItemsBottom.findIndex((item) => item === null);
+    if (firstEmptyIndex !== -1) {
+      setHoveredCircleIndexBottom(firstEmptyIndex);
+    } else {
+      setHoveredCircleIndexBottom(-1); // Set to -1 to indicate that no empty dropbox is available
+    }
   };
 
   const handleRectangleDragOver = (e) => {
     e.preventDefault();
-    setIsRectangleDraggingOver(true);
-    setIsCircleDraggingOver1(false);
-    setIsCircleDraggingOver2(false);
+    const firstEmptyIndex = droppedRectangleItems.findIndex((item) => item === null);
+    if (firstEmptyIndex !== -1) {
+      setHoveredRectangleIndex(firstEmptyIndex);
+    } else {
+      setHoveredRectangleIndex(-1); // Set to -1 to indicate that no empty dropbox is available
+    }
   };
 
-  const handleDragEnter = () => {
-    setIsCircleDraggingOver1(true);
-    setIsCircleDraggingOver2(true);
-    setIsRectangleDraggingOver(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsCircleDraggingOver1(false);
-    setIsCircleDraggingOver2(false);
-    setIsRectangleDraggingOver(false);
-  };
-
-  const handleCircleDrop1 = (e, index) => {
+  const handleCircleDropTop = (e, index) => {
     e.preventDefault();
-
     const draggedItem = JSON.parse(e.dataTransfer.getData("application/react"));
-    // Check if the dragged item is a circle
+
     if (draggedItem.type !== "Circle") {
       alert("Circle drop box can only contain circle items.");
       return;
     }
 
-    // If there's already a dropped item at this index, prevent dropping again
-    if (droppedCircleItems1[index]) {
-      alert("Already dropped a circle here. Cannot drop again.");
+    if (droppedCircleItemsTop[index]) {
+      alert("This drop box already contains an item. Please choose another drop box.");
       return;
     }
 
-    setDroppedCircleItems1((prevItems) => {
+    setDroppedCircleItemsTop((prevItems) => {
       const newItems = [...prevItems];
-      newItems[index] = draggedItem; // Update the dropped item at the specified index
+      newItems[index] = draggedItem;
       return newItems;
     });
-    setIsCircleDraggingOver1(false); // Update dragging over state after drop
-    setNextEmptyCircleIndex1(index + 1); // Update the next empty circle index
-    setIsCircleDraggingOver1(false); // Hide border after drop
-    setIsCircleDraggingOver2(false); // Hide border for the second circle drop box
-    setIsRectangleDraggingOver(false); // Hide border for rectangle drop boxes
+    setHoveredCircleIndexTop(null);
   };
 
-  const handleCircleDrop2 = (e, index) => {
+  const handleCircleDropBottom = (e, index) => {
     e.preventDefault();
-
     const draggedItem = JSON.parse(e.dataTransfer.getData("application/react"));
-    // Check if the dragged item is a circle
+
     if (draggedItem.type !== "Circle") {
       alert("Circle drop box can only contain circle items.");
       return;
     }
 
-    // If there's already a dropped item at this index, prevent dropping again
-    if (droppedCircleItems2[index]) {
-      alert("Already dropped a circle here. Cannot drop again.");
+    if (droppedCircleItemsBottom[index]) {
+      alert("This drop box already contains an item. Please choose another drop box.");
       return;
     }
 
-    setDroppedCircleItems2((prevItems) => {
+    setDroppedCircleItemsBottom((prevItems) => {
       const newItems = [...prevItems];
-      newItems[index] = draggedItem; // Update the dropped item at the specified index
+      newItems[index] = draggedItem;
       return newItems;
     });
-    setIsCircleDraggingOver2(false); // Update dragging over state after drop
-    setNextEmptyCircleIndex2(index + 1); // Update the next empty circle index
-    setIsCircleDraggingOver1(false); // Hide border for the first circle drop box
-    setIsCircleDraggingOver2(false); // Hide border after drop
-    setIsRectangleDraggingOver(false); // Hide border for rectangle drop boxes
+    setHoveredCircleIndexBottom(null);
   };
 
   const handleRectangleDrop = (e, index) => {
     e.preventDefault();
-
     const draggedItem = JSON.parse(e.dataTransfer.getData("application/react"));
-    // Check if the dragged item is a rectangle
+
     if (draggedItem.type !== "Rectangle") {
       alert("Rectangle drop box can only contain rectangle items.");
       return;
     }
 
-    // If there's already a dropped item at this index, prevent dropping again
     if (droppedRectangleItems[index]) {
-      alert("Already dropped a rectangle here. Cannot drop again.");
+      alert("This drop box already contains an item. Please choose another drop box.");
       return;
     }
 
     setDroppedRectangleItems((prevItems) => {
       const newItems = [...prevItems];
-      newItems[index] = draggedItem; // Update the dropped item at the specified index
+      newItems[index] = draggedItem;
       return newItems;
     });
-    setIsRectangleDraggingOver(false); // Update dragging over state after drop
-    setNextEmptyRectangleIndex(index + 1); // Update the next empty rectangle index
-    setIsCircleDraggingOver1(false); // Hide border for the first circle drop box
-    setIsCircleDraggingOver2(false); // Hide border for the second circle drop box
-    setIsRectangleDraggingOver(false); // Hide border after drop
+    setHoveredRectangleIndex(null);
+  };
+
+  const handleDelete = () => {
+    if (!selectedItem) return;
+
+    if (selectedItem.type === "Circle") {
+      const indexTop = droppedCircleItemsTop.indexOf(selectedItem);
+      if (indexTop !== -1) {
+        const newItemsTop = [...droppedCircleItemsTop];
+        newItemsTop[indexTop] = null;
+        setDroppedCircleItemsTop(newItemsTop);
+      }
+
+      const indexBottom = droppedCircleItemsBottom.indexOf(selectedItem);
+      if (indexBottom !== -1) {
+        const newItemsBottom = [...droppedCircleItemsBottom];
+        newItemsBottom[indexBottom] = null;
+        setDroppedCircleItemsBottom(newItemsBottom);
+      }
+    } else if (selectedItem.type === "Rectangle") {
+      const index = droppedRectangleItems.indexOf(selectedItem);
+      if (index !== -1) {
+        const newItems = [...droppedRectangleItems];
+        newItems[index] = null;
+        setDroppedRectangleItems(newItems);
+      }
+    }
+    setSelectedItem(null);
   };
 
   return (
     <div className="flex mx-auto" style={{ height: '100vh', width: '100vw' }}>
-      <div className="w-64 min-h-screen bg-gray-200 flex justify-center" onDragOver={(e) => e.preventDefault()}>
+      <div className="min-w-64 min-h-screen bg-gray-200 flex justify-center" onDragOver={handleCircleDragOverTop}>
         <div className="space-y-3">
           <div className="w-full flex justify-center">
             <Circle onDragStart={(e) => handleDragStart(e, { type: "Circle" })} onDragEnd={handleDragEnd} />
           </div>
-          <div>
+          <div className="w-full flex justify-center">
             <Rectangle onDragStart={(e) => handleDragStart(e, { type: "Rectangle" })} onDragEnd={handleDragEnd} />
           </div>
         </div>
       </div>
-      <div className="flex-1 p-6 ml-16" onDragOver={handleDragEnter} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>
+
+      <div className="flex-1 pt-6">
         <div className="" style={{ position: 'relative' }}>
-          <div className="flex">
-            {droppedCircleItems1.map((item, index) => (
+          <div className="flex ">
+            {droppedCircleItemsTop.map((item, index) => (
               <div
-                key={`circle-drop1-${index}`}
-                className="border border-dashed border-black p-4 m-2"
-                onDrop={(e) => handleCircleDrop1(e, index)}
-                onDragOver={(e) => handleCircleDragOver1(e)}
+                key={`circle-drop-top-${index}`}
+                className="border border-dashed border-black p-4 mx-2 mb-2"
+                onDrop={(e) => handleCircleDropTop(e, index)}
+                onDragOver={(e) => handleCircleDragOverTop(e)}
                 style={{
-                  width: '200px',
-                  height: '200px',
-                  borderRadius: '50%',
-                  border: isCircleDraggingOver1 && index === nextEmptyCircleIndex1 ? '2px dashed black' : 'none', // Update border style based on dragging over and index
+                  width: '150px',
+                  height: '150px',
+                  borderRadius: '50%', // Circular shape
+                  border: hoveredCircleIndexTop === index && hoveredCircleIndexTop !== -1 && isDragging ? '2px dashed black' : '2px dashed transparent',
                 }}
+                onClick={() => setSelectedItem(item)}
               >
                 {item && <Circle />}
               </div>
             ))}
           </div>
-
-          <div className="flex">
+          <div className="flex ">
             {droppedRectangleItems.map((item, index) => (
               <div
                 key={`rectangle-drop-${index}`}
-                className="border border-dashed border-black p-4 m-2"
+                className="border border-dashed border-black p-4 mx-2 mt-4"
                 onDrop={(e) => handleRectangleDrop(e, index)}
                 onDragOver={(e) => handleRectangleDragOver(e)}
                 style={{
-                  width: '200px',
+                  width: '495px',
                   height: '150px',
-                  border: isRectangleDraggingOver && index === nextEmptyRectangleIndex ? '2px dashed black' : 'none', // Update border style based on dragging over and index
+                  borderRadius: '0%', // Rectangular shape
+                  border: hoveredRectangleIndex === index && hoveredRectangleIndex !== -1 && isDragging ? '2px dashed black' : '2px dashed transparent',
                 }}
+                onClick={() => setSelectedItem(item)}
               >
                 {item && <Rectangle />}
               </div>
             ))}
           </div>
-
-          <div className="flex">
-            {droppedCircleItems2.map((item, index) => (
+          <div className="flex ">
+            {droppedCircleItemsBottom.map((item, index) => (
               <div
-                key={`circle-drop2-${index}`}
-                className="border border-dashed border-black p-4 m-2"
-                onDrop={(e) => handleCircleDrop2(e, index)}
-                onDragOver={(e) => handleCircleDragOver2(e)}
+                key={`circle-drop-bottom-${index}`}
+                className="border border-dashed border-black p-4 mx-2 -mt-4"
+                onDrop={(e) => handleCircleDropBottom(e, index)}
+                onDragOver={(e) => handleCircleDragOverBottom(e)}
                 style={{
-                  width: '200px',
-                  height: '200px',
-                  borderRadius: '50%',
-                  border: isCircleDraggingOver2 && index === nextEmptyCircleIndex2 ? '2px dashed black' : 'none', // Update border style based on dragging over and index
+                  width: '150px',
+                  height: '150px',
+                  borderRadius: '50%', // Circular shape
+                  border: hoveredCircleIndexBottom === index && hoveredCircleIndexBottom !== -1 && isDragging ? '2px dashed black' : '2px dashed transparent',
                 }}
+                onClick={() => setSelectedItem(item)}
               >
                 {item && <Circle />}
               </div>
@@ -211,6 +237,17 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {selectedItem && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded shadow">
+            <p>Are you sure you want to delete this item?</p>
+            <div className="flex justify-end mt-4">
+              <button className="bg-red-500 text-white px-4 py-2 rounded mr-2" onClick={handleDelete}>Delete</button>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setSelectedItem(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

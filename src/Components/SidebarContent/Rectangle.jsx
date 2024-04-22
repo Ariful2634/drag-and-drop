@@ -6,7 +6,7 @@ const Rectangle = ({ onDragStart }) => {
         draggable
         onDragStart={(e) => onDragStart(e, "Rectangle")}
       >
-        <div className="w-[170px] h-[80px] rounded border-4 flex justify-center items-center  border-green-600">
+        <div className="min-w-[170px] max-w-[500px] h-[80px] rounded border-4 flex justify-center items-center  border-green-600">
           <div>
             <h2>Rectangle</h2>
           </div>
