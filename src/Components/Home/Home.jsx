@@ -6,11 +6,11 @@ import UpArrow from "../SidebarContent/UpArrow";
 
 
 const Home = () => {
-  const [droppedTopCircleItems, setDroppedTopCircleItems] = useState(Array(3).fill(null));
+  const [droppedTopCircleItems, setDroppedTopCircleItems] = useState(Array(5).fill(null));
   const [hoveredTopCircleIndex, setHoveredTopCircleIndex] = useState([]);
   const [selectedTopCircleItem, setSelectedTopCircleItem] = useState(null);
 
-  const [droppedBottomCircleItems, setDroppedBottomCircleItems] = useState(Array(3).fill(null));
+  const [droppedBottomCircleItems, setDroppedBottomCircleItems] = useState(Array(5).fill(null));
   const [hoveredBottomCircleIndex, setHoveredBottomCircleIndex] = useState([]);
   const [selectedBottomCircleItem, setSelectedBottomCircleItem] = useState(null);
 
@@ -18,11 +18,11 @@ const Home = () => {
   const [hoveredRectangleIndex, setHoveredRectangleIndex] = useState([]);
   const [selectedRectangleItem, setSelectedRectangleItem] = useState(null);
 
-  const [droppedDownArrowItems, setDroppedDownArrowItems] = useState(Array(3).fill(null));
+  const [droppedDownArrowItems, setDroppedDownArrowItems] = useState(Array(5).fill(null));
   const [hoveredDownArrowIndex, setHoveredDownArrowIndex] = useState([]);
   const [selectedDownArrowItem, setSelectedDownArrowItem] = useState(null);
 
-  const [droppedUpArrowItems, setDroppedUpArrowItems] = useState(Array(3).fill(null));
+  const [droppedUpArrowItems, setDroppedUpArrowItems] = useState(Array(5).fill(null));
   const [hoveredUpArrowIndex, setHoveredUpArrowIndex] = useState([]);
   const [selectedUpArrowItem, setSelectedUpArrowItem] = useState(null);
 
@@ -245,6 +245,9 @@ const Home = () => {
 
   return (
     <div className="flex mx-auto" style={{ height: "100vh", width: "100vw" }}>
+
+      {/* -------------------------------------------------Sidebar content start-------------------------------- */}
+
       <div className="min-w-64 min-h-screen bg-gray-200 flex justify-center">
         <div className="space-y-3">
           <div className="w-full flex justify-center" onDragOver={handleCircleDragOver}>
@@ -263,18 +266,25 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1 ">
+
+      {/* -------------------------------------------------Sidebar content end------------------------------- */}
+
+      {/* --------------------------------------------Dropbox start-------------------------------------------- */}
+
+      <div className="flex-1 pl-4 pt-4">
         <div style={{ position: "relative" }}>
-          <div className="flex">
+
+          {/* for top circle */}
+          <div className="flex space-x-2 ">
             {droppedTopCircleItems.map((item, index) => (
               <div
                 key={`top-circle-drop-${index}`}
-                className="border border-dashed border-black p-4 m-2"
+                className="border border-dashed border-black  "
                 onDrop={(e) => handleDrop(e, index, "top")}
                 onDragOver={(e) => handleCircleDragOver(e)}
                 style={{
-                  width: "150px",
-                  height: "150px",
+                  width: "120px",
+                  height: "120px",
                   borderRadius: "50%",
                   border: hoveredTopCircleIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
                 }}
@@ -284,17 +294,20 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <div className="flex">
+
+          {/* for down arrow */}
+          <div className="flex pl-[48.5px] space-x-[98px] ">
             {droppedDownArrowItems.map((item, index) => (
               <div
                 key={`down-arrow-drop-${index}`}
-                className="border border-dashed border-black p-4 mx-[8.5px] -mt-[40px]"
+                className="border border-dashed border-black rounded-full"
                 onDrop={(e) => handleDownArrowDrop(e, index)}
                 onDragOver={(e) => handleDownArrowDragOver(e)}
                 style={{
-                  width: "150px",
-                  height: "150px",
+                  width: "30px",
+                  height: "120px",
                   border: hoveredDownArrowIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+
                 }}
                 onClick={() => setSelectedDownArrowItem(item)}
               >
@@ -302,18 +315,23 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <div className="flex">
+
+
+
+          {/* for rectangle */}
+          <div className="flex -mt-[14px]">
             {droppedRectangleItems.map((item, index) => (
               <div
                 key={`rectangle-drop-${index}`}
-                className="border border-dashed border-black p-4 m-2 -mt-[43px]"
+                className="border border-dashed border-black rounded-lg "
                 onDrop={(e) => handleRectangleDrop(e, index)}
                 onDragOver={(e) => handleRectangleDragOver(e)}
                 style={{
-                  width: "495px",
-                  height: "150px",
+                  width: "650px",
+                  height: "100px",
                   borderRadius: "0%",
                   border: hoveredRectangleIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+                  marginTop: hoveredRectangleIndex.includes(index) ? "15px" : "0px ",
                 }}
                 onClick={() => setSelectedRectangleItem(item)}
               >
@@ -321,17 +339,20 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <div className="flex">
+
+          {/* for up arrow */}
+          <div className="flex pl-[48.5px] space-x-[98px] -mt-[14px]">
             {droppedUpArrowItems.map((item, index) => (
               <div
                 key={`up-arrow-drop-${index}`}
-                className="border border-dashed border-black p-4 m-2 -mt-[72px]"
+                className="border border-dashed border-black rounded-full "
                 onDrop={(e) => handleUpArrowDrop(e, index)}
                 onDragOver={(e) => handleUpArrowDragOver(e)}
                 style={{
-                  width: "150px",
-                  height: "150px",
+                  width: "30px",
+                  height: "120px",
                   border: hoveredUpArrowIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+                  marginTop: hoveredUpArrowIndex.includes(index) ? "10px" : "0px ",
                 }}
                 onClick={() => setSelectedUpArrowItem(item)}
               >
@@ -339,18 +360,21 @@ const Home = () => {
               </div>
             ))}
           </div>
-          <div className="flex">
+
+          {/* for bottom circle */}
+          <div className="flex space-x-2 -mt-[22px]">
             {droppedBottomCircleItems.map((item, index) => (
               <div
                 key={`bottom-circle-drop-${index}`}
-                className="border border-dashed border-black p-4 mx-2 -mt-[58px]"
+                className="border border-dashed border-black"
                 onDrop={(e) => handleDrop(e, index, "bottom")}
                 onDragOver={(e) => handleCircleDragOver(e)}
                 style={{
-                  width: "150px",
-                  height: "150px",
+                  width: "120px",
+                  height: "120px",
                   borderRadius: "50%",
                   border: hoveredBottomCircleIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+                  marginTop: hoveredBottomCircleIndex.includes(index) ? "18px" : "0px ",
                 }}
                 onClick={() => setSelectedBottomCircleItem(item)}
               >
@@ -360,6 +384,10 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {/* -----------------------------------------------------------Dropbox end------------------------------------------ */}
+
+      {/* -------------------------------------------------For delete items start------------------------------------------ */}
 
       {/* Delete Popup for Top Circle */}
       {selectedTopCircleItem && (
@@ -445,6 +473,7 @@ const Home = () => {
           </div>
         </div>
       )}
+      {/* ----------------------------------------------------------Delete Item end--------------------------------------------- */}
     </div>
   );
 };
