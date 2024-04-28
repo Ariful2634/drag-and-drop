@@ -44,6 +44,7 @@ const ViewPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // fetch the data
     const fetchData = async () => {
         try {
             const newData = {};
@@ -68,6 +69,7 @@ const ViewPage = () => {
         return <div>Loading...</div>;
     }
 
+    // setup the position indexwise
     const generateAllPositions = () => {
         const maxPosition = Math.max(...getSource.map(source => parseInt(source.position.substring(1))));
         return Array.from({ length: maxPosition + 1 }, (_, index) => `S${index}`);
