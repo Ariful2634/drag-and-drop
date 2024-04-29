@@ -91,7 +91,7 @@ const ViewPage = () => {
                         const latestDataPoint = sourceDataPoints.reduce((prev, current) => {
                             return (prev.timedate > current.timedate) ? prev : current;
                         }, {});
-                        const latestPowerValue = latestDataPoint.power;
+                        const latestPowerValue = latestDataPoint?.power;
                         console.log(latestPowerValue)
                         return (
                             <div key={source.position}>
