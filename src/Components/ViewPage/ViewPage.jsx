@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 
 // Define the useInterval hook
 function useInterval(callback, delay) {
@@ -94,37 +95,41 @@ const ViewPage = () => {
                         console.log(latestPowerValue)
                         return (
                             <div key={source.position}>
-                                {
-                                    (!shape || shape === 'circle') ? (
-                                        <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded-full border-[3px] flex justify-center items-center border-green-600 relative">
-                                            <div className="absolute top-0 right-0 bg-white rounded-full p-1">
-                                                {position}
-                                            </div>
-                                            <div className="text-center">
-                                                <h2 className="text-sm font-semibold">{sourceName}</h2>
-                                                <h2 className="text-sm">{sourceType}</h2>
-                                                <p className="text-xs">{position}</p>
-                                                {latestPowerValue !== undefined && (
-                                                    <p className="text-xs">Power: {latestPowerValue}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded border-[3px] flex justify-center items-center border-green-600 relative">
-                                            <div className="absolute top-0 right-0 bg-white rounded-full p-1">
-                                                {position}
-                                            </div>
-                                            <div className="text-center">
-                                                <h2 className="text-sm font-semibold">{sourceName}</h2>
-                                                <h2 className="text-sm">{sourceType}</h2>
-                                                <p className="text-xs">{position}</p>
-                                                {latestPowerValue !== undefined && (
-                                                    <p className="text-xs">Power: {latestPowerValue}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                }
+                                <Link to={`/page1/${sourceName}`}>
+                                    <div>
+                                        {
+                                            (!shape || shape === 'circle') ? (
+                                                <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded-full border-[3px] flex justify-center items-center border-green-600 relative">
+                                                    <div className="absolute top-0 right-0 bg-white rounded-full p-1">
+                                                        {position}
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <h2 className="text-sm font-semibold">{sourceName}</h2>
+                                                        <h2 className="text-sm">{sourceType}</h2>
+                                                        <p className="text-xs">{position}</p>
+                                                        {latestPowerValue !== undefined && (
+                                                            <p className="text-xs">Power: {latestPowerValue}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded border-[3px] flex justify-center items-center border-green-600 relative">
+                                                    <div className="absolute top-0 right-0 bg-white rounded-full p-1">
+                                                        {position}
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <h2 className="text-sm font-semibold">{sourceName}</h2>
+                                                        <h2 className="text-sm">{sourceType}</h2>
+                                                        <p className="text-xs">{position}</p>
+                                                        {latestPowerValue !== undefined && (
+                                                            <p className="text-xs">Power: {latestPowerValue}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                </Link>
                             </div>
                         );
                     } else {
