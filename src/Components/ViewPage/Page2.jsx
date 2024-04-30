@@ -1,4 +1,4 @@
-import { useLoaderData, useParams } from "react-router-dom";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 
 
 const Page2 = () => {
@@ -11,7 +11,12 @@ const Page2 = () => {
 
     return (
         <div>
-            <h2>{name}</h2>
+              <Link to={`/page3/${name}`}>
+                <div>
+                    <h1 className="text-center font-bold text-xl">{name.charAt(0).toUpperCase() + name.slice(1)} Power</h1>
+                </div>
+                <button className="btn btn-primary">Link</button>
+            </Link>
         </div>
     );
 };

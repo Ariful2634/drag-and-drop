@@ -1,14 +1,13 @@
 /* eslint-disable react/prop-types */
-import {  useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
-const NamePopup = ({ onSubmit, onCancel, position, shape }) => {
+const NamePopup = ({ onSubmit, onCancel, position, shape, dropboxName }) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("selectCategory");
   const [nameError, setNameError] = useState("");
   const [typeError, setTypeError] = useState("");
-
- 
+  const [showWarning, setShowWarning] = useState(false); // State for showing warning message
 
   const handleSubmit = () => {
     if (name.trim() === "") {
@@ -16,43 +15,47 @@ const NamePopup = ({ onSubmit, onCancel, position, shape }) => {
     } else {
       setNameError("");
     }
-  
+
     if (category === "selectCategory") {
       setTypeError("Type is required");
     } else {
       setTypeError("");
     }
-  
+
     if (name.trim() !== "" && category !== "selectCategory") {
       let modifiedPosition = position.toString(); // Initialize modified position
-  
-      if (category === "Source") {
-        modifiedPosition = "S" + modifiedPosition; // Add 'S' prefix for Source category
-      } else if (category === "Load") {
-        modifiedPosition = "L" + modifiedPosition; // Add 'L' prefix for Load category
+
+      if (category === dropboxName) {
+        if (category === "Source") {
+          modifiedPosition = "S" + modifiedPosition;
+        } else if (category === "Load") {
+          modifiedPosition = "L" + modifiedPosition;
+        }
+
+        const apiUrl = "http://192.168.60.127:8085/add-source/";
+        const requestBody = {
+          source_name: name.trim(),
+          source_type: category,
+          position: modifiedPosition,
+          shape: shape === "Circle" ? "circle" : "box"
+        };
+
+        axios
+          .post(apiUrl, requestBody)
+          .then((response) => {
+            console.log("API Response:", response.data);
+            onSubmit(name.trim(), shape);
+          })
+          .catch((error) => {
+            console.error("API Error:", error);
+          });
+      } else {
+        setShowWarning(true); // Show warning message
       }
-  
-      const apiUrl = "http://192.168.60.127:8085/add-source/";
-      const requestBody = {
-        source_name: name.trim(),
-        source_type: category,
-        position: modifiedPosition,
-        shape: shape === "Circle" ? "circle" : "box"
-      };
-  
-      axios.post(apiUrl, requestBody)
-        .then(response => {
-          console.log("API Response:", response.data);
-          onSubmit(name.trim(), shape);
-        })
-        .catch(error => {
-          console.error("API Error:", error);
-        });
     } else {
       console.log("Please select a valid type.");
     }
   };
-  
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-600 bg-opacity-50 flex justify-center items-center">
@@ -78,6 +81,9 @@ const NamePopup = ({ onSubmit, onCancel, position, shape }) => {
         </div>
         {nameError && <p className="text-red-500">{nameError}</p>}
         {typeError && <p className="text-red-500">{typeError}</p>}
+        {showWarning && (
+          <p className="text-red-500 font-bold pb-3">Please Change Category And Try Again.</p>
+        )}
         <div className="flex justify-end">
           <button className="bg-blue-500 text-white px-4 py-2 rounded mr-2" onClick={handleSubmit}>
             Submit

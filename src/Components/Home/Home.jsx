@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect, useRef } from "react";
 import Circle from "../SidebarContent/Circle";
 import Rectangle from "../SidebarContent/Rectangle";
@@ -26,18 +27,24 @@ function useInterval(callback, delay) {
 }
 
 const Home = () => {
-  const [droppedItems, setDroppedItems] = useState(Array(8).fill(null));
-  const [hoveredIndex, setHoveredIndex] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [droppedTopItems, setDroppedTopItems] = useState(Array(8).fill(null));
+  const [hoveredTopIndex, setHoveredTopIndex] = useState([]);
+  const [selectedTopItem, setSelectedTopItem] = useState(null);
+
+  const [droppedBottomItems, setDroppedBottomItems] = useState(Array(8).fill(null));
+  const [hoveredBottomIndex, setHoveredBottomIndex] = useState([]);
+  const [selectedBottomItem, setSelectedBottomItem] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupIndex, setPopupIndex] = useState(null);
   const [draggedItemType, setDraggedItemType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dropboxName, setDropboxName] = useState(null);
 
 
   useEffect(() => {
     const handleDragEndOutside = () => {
-      setHoveredIndex([]);
+      setHoveredTopIndex([]);
+      setHoveredBottomIndex([]);
     };
 
     document.addEventListener("dragend", handleDragEndOutside);
@@ -55,73 +62,110 @@ const Home = () => {
 
 
   const handleDragEnd = () => {
-    setHoveredIndex([]);
+    setHoveredTopIndex([]);
+    setHoveredBottomIndex([]);
   };
 
   const handleCircleDragOver = (e) => {
     e.preventDefault();
-    const firstEmptyIndex = droppedItems.findIndex((item) => item === null);
-    let nextFilledIndex = -1;
-    for (let i = droppedItems.length - 1; i >= 0; i--) {
-      if (droppedItems[i] !== null) {
-        nextFilledIndex = i + 1;
+    const firstTopEmptyIndex = droppedTopItems.findIndex((item) => item === null);
+    const firstBottomEmptyIndex = droppedBottomItems.findIndex((item) => item === null);
+    let nextFilledTopIndex = -1;
+    let nextFilledBottomIndex = -1;
+    for (let i = droppedTopItems.length - 1; i >= 0; i--) {
+      if (droppedTopItems[i] !== null) {
+        nextFilledTopIndex = i + 1;
         break;
       }
     }
-    setHoveredIndex([firstEmptyIndex, nextFilledIndex]);
+    for (let i = droppedBottomItems.length - 1; i >= 0; i--) {
+      if (droppedBottomItems[i] !== null) {
+        nextFilledBottomIndex = i + 1;
+        break;
+      }
+    }
+    setHoveredTopIndex([firstTopEmptyIndex, nextFilledTopIndex]);
+    setHoveredBottomIndex([firstBottomEmptyIndex, nextFilledBottomIndex]);
   };
 
   const handleRectangleDragOver = (e) => {
     e.preventDefault();
-    const firstEmptyIndex = droppedItems.findIndex((item) => item === null);
-    let nextFilledIndex = -1;
-    for (let i = droppedItems.length - 1; i >= 0; i--) {
-      if (droppedItems[i] !== null) {
-        nextFilledIndex = i + 1;
+    const firstTopEmptyIndex = droppedTopItems.findIndex((item) => item === null);
+    const firstBottomEmptyIndex = droppedBottomItems.findIndex((item) => item === null);
+    let nextFilledTopIndex = -1;
+    let nextFilledBottomIndex = -1;
+    for (let i = droppedTopItems.length - 1; i >= 0; i--) {
+      if (droppedTopItems[i] !== null) {
+        nextFilledTopIndex = i + 1;
         break;
       }
     }
-    setHoveredIndex([firstEmptyIndex, nextFilledIndex]);
+    for (let i = droppedBottomItems.length - 1; i >= 0; i--) {
+      if (droppedBottomItems[i] !== null) {
+        nextFilledBottomIndex = i + 1;
+        break;
+      }
+    }
+    setHoveredTopIndex([firstTopEmptyIndex, nextFilledTopIndex]);
+    setHoveredBottomIndex([firstBottomEmptyIndex, nextFilledBottomIndex]);
   };
 
-  const handleDrop = (e, index) => {
+  const handleDrop = (e, index, name, type) => {
     e.preventDefault();
     const draggedItem = JSON.parse(e.dataTransfer.getData("application/react"));
 
     // Log the type of the dragged item to console
     console.log("Dragged Item Type:", draggedItem.type);
 
+    // Access the name of the dropbox
+    console.log('Dropbox name:', name);
+
     // Set the shape based on the dragged item type
     const shape = draggedItem.type === "Circle" ? "circle" : "box";
 
-    setDroppedItems((prevItems) => {
-      const newItems = [...prevItems];
-      newItems[index] = { ...draggedItem, shape }; // Include the shape in the dropped item
-      return newItems;
-    });
-    setHoveredIndex([]);
+    if(type === 'top'){
+      setDroppedTopItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems[index] = { ...draggedItem, shape }; // Include the shape in the dropped item
+        return newItems;
+      });
+    } else if (type === 'bottom'){
+      setDroppedBottomItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems[index] = { ...draggedItem, shape }; // Include the shape in the dropped item
+        return newItems;
+      });
+    }
+    setHoveredTopIndex([]);
+    setHoveredBottomIndex([]);
     setShowPopup(true);
     setPopupIndex(index);
+    setDropboxName(name);
   };
 
 
-  const handleDeleteItem = () => {
-    if (!selectedItem) return;
-    const index = droppedItems.indexOf(selectedItem);
-    if (index !== -1) {
-      const newItems = [...droppedItems];
-      newItems[index] = null;
-      setDroppedItems(newItems);
-    }
-    setSelectedItem(null);
-  };
+  // const handleDeleteItem = () => {
+  //   if (!selectedTopItem) return;
+  //   const index = droppedTopItems.indexOf(selectedTopItem);
+  //   if (index !== -1) {
+  //     const newItems = [...droppedTopItems];
+  //     newItems[index] = null;
+  //     setDroppedTopItems(newItems);
+  //   }
+  //   setSelectedTopItem(null);
+  // };
 
   // ----------------showing the popup after drop----------------------
 
   const handleSubmitPopup = (name) => {
     const index = popupIndex;
     if (index !== null) {
-      setDroppedItems((prevItems) => {
+      setDroppedTopItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems[index] = { ...newItems[index], name };
+        return newItems;
+      });
+      setDroppedBottomItems((prevItems) => {
         const newItems = [...prevItems];
         newItems[index] = { ...newItems[index], name };
         return newItems;
@@ -134,7 +178,12 @@ const Home = () => {
   const handleCancelPopup = () => {
     const index = popupIndex;
     if (index !== null) {
-      setDroppedItems((prevItems) => {
+      setDroppedTopItems((prevItems) => {
+        const newItems = [...prevItems];
+        newItems[index] = null;
+        return newItems;
+      });
+      setDroppedBottomItems((prevItems) => {
         const newItems = [...prevItems];
         newItems[index] = null;
         return newItems;
@@ -180,7 +229,52 @@ const Home = () => {
           newItems[index] = { ...source }; // Push source info to corresponding index
         }
       }));
-      setDroppedItems(newItems); // Update droppedItems array with source info
+      setDroppedTopItems(newItems); // Update droppedTopItems array with source info
+      setLoading(false);
+      // Manually invalidate the cache to trigger a refetch
+      queryClient.invalidateQueries("getSource");
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    }
+  };
+
+  // ----------------------------- fetch the data-------------------------------
+
+  // const queryClient = useQueryClient(); // Initialize queryClient
+  const { data: getLoad = [] } = useQuery({
+    queryKey: ['getLoad'],
+    queryFn: async () => {
+      const res = await axios.get('http://192.168.60.127:8085/get-load-info/');
+      return res.data;
+    }
+  });
+
+
+
+  // Refresh data every 2 seconds
+  useInterval(() => {
+    fetchData1();
+  }, 2000);
+
+
+  useEffect(() => {
+    fetchData1();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getLoad]);
+
+
+  const fetchData1 = async () => {
+    try {
+      const newItems = Array(8).fill(null); // Initialize an array to hold fetched items
+      await Promise.all(getLoad.map(async (load) => {
+        const { source_name, position } = load;
+        if (source_name && position && position.startsWith("L")) { // Ensure position starts with "L"
+          const index = parseInt(position.substring(1)); // Extract index from position
+          newItems[index] = { ...load }; // Push source info to corresponding index
+        }
+      }));
+      setDroppedBottomItems(newItems); // Update droppedTopItems array with source info
       setLoading(false);
       // Manually invalidate the cache to trigger a refetch
       queryClient.invalidateQueries("getSource");
@@ -212,23 +306,24 @@ const Home = () => {
         </div>
       </div>
 
-      {/* -----------------dropbox functionality----------------------------- */}
+      <div>
+        {/* -----------------top dropbox functionality----------------------------- */}
       <div className="flex-1 pl-4 pt-4 ">
         <div style={{ position: "relative" }}>
           <div className="flex space-x-10">
-            {droppedItems.map((item, index) => (
+            {droppedTopItems.map((item, index) => (
               <div
-                key={`dropped-item-${index}`}
+                key={`top-dropped-item-${index}`}
                 className="border border-dashed border-black"
-                onDrop={(e) => handleDrop(e, index)}
+                onDrop={(e) => handleDrop(e, index, 'Source','top')}
                 onDragOver={(e) => e.preventDefault()}
                 style={{
                   width: "120px",
                   height: "120px",
-                  border: hoveredIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+                  border: hoveredTopIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
                   pointerEvents: "auto",
                 }}
-                onClick={() => setSelectedItem(item)}
+                onClick={() => setSelectedTopItem(item)}
               >
                 {/* Render the source info */}
                 {item && (
@@ -272,6 +367,67 @@ const Home = () => {
         </div>
       </div>
 
+       {/* -----------------bottom dropbox functionality----------------------------- */}
+       <div className="flex-1 pl-4 pt-4 ">
+        <div style={{ position: "relative" }}>
+          <div className="flex space-x-10">
+            {droppedBottomItems.map((item, index) => (
+              <div
+                key={`bottom-dropped-item-${index}`}
+                className="border border-dashed border-black"
+                onDrop={(e) => handleDrop(e, index, 'Load','bottom')}
+                onDragOver={(e) => e.preventDefault()}
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  border: hoveredBottomIndex.includes(index) ? "2px dashed black" : "2px dashed transparent",
+                  pointerEvents: "auto",
+                }}
+                onClick={() => setSelectedBottomItem(item)}
+              >
+                {/* Render the source info */}
+                {item && (
+                  <div key={item?.position}>
+                    {
+                      (!item?.shape || item?.shape === 'circle') ? (
+                        <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded-full border-[3px] flex justify-center items-center border-green-600 relative">
+                          <div className="absolute top-0 right-0 bg-white rounded-full p-1">
+                            {item.position}
+                          </div>
+                          <div className="text-center">
+                            <h2 className="text-sm font-semibold">{item?.source_name}</h2>
+                            <h2 className="text-sm">{item?.source_type}</h2>
+                            <p className="text-xs">{item?.position}</p>
+                            {/* {latestPowerValue !== undefined && (
+                                      <p className="text-xs">Power: {latestPowerValue}</p>
+                                  )} */}
+                          </div>
+                        </div>
+                      ) : (
+                        <div key={index} className="flex-shrink-0 w-[120px] h-[120px] rounded border-[3px] flex justify-center items-center border-green-600 relative">
+                          <div className="absolute top-0 right-0 bg-white rounded-full p-1">
+                            {item?.position}
+                          </div>
+                          <div className="text-center">
+                            <h2 className="text-sm font-semibold">{item?.source_name}</h2>
+                            <h2 className="text-sm">{item?.source_type}</h2>
+                            <p className="text-xs">{item?.position}</p>
+                            {/* {latestPowerValue !== undefined && (
+                                      <p className="text-xs">Power: {latestPowerValue}</p>
+                                  )} */}
+                          </div>
+                        </div>
+                      )
+                    }
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      </div>
+
       {/* -------------------showing the pop up---------------------------- */}
       {showPopup && (
         <NamePopup
@@ -283,11 +439,12 @@ const Home = () => {
           }}
           position={popupIndex}
           shape={draggedItemType}
+          dropboxName={dropboxName}
         />
       )}
 
       {/* ----------------delete dropbox item----------------------------- */}
-      {selectedItem && (
+      {/* {selectedTopItem && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-600 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-8 rounded shadow">
             <p>Are you sure you want to delete this item?</p>
@@ -295,13 +452,13 @@ const Home = () => {
               <button className="bg-red-500 text-white px-4 py-2 rounded mr-2" onClick={handleDeleteItem}>
                 Delete
               </button>
-              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setSelectedItem(null)}>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setSelectedTopItem(null)}>
                 Cancel
               </button>
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

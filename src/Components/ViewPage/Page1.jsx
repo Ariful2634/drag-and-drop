@@ -11,8 +11,10 @@ const Page1 = () => {
 
     return (
         <div>
-            <h2>{name}</h2>
             <Link to={`/page2/${name}`}>
+                <div>
+                    <h1 className="text-center font-bold text-xl">{name.charAt(0).toUpperCase() + name.slice(1)} Energy</h1>
+                </div>
                 <button className="btn btn-primary">Link</button>
             </Link>
         </div>
