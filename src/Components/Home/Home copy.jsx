@@ -143,10 +143,10 @@ const Home = () => {
     const draggedItem = JSON.parse(e.dataTransfer.getData("application/react"));
 
     // Log the type of the dragged item to console
-    // console.log("Dragged Item Type:", draggedItem.type);
+    console.log("Dragged Item Type:", draggedItem.type);
 
     // Access the name of the dropbox
-    // console.log('Dropbox name:', name);
+    console.log('Dropbox name:', name);
 
     // Set the shape based on the dragged item type
     const shape = draggedItem.type === "Circle" ? "circle" : "box";
@@ -276,13 +276,10 @@ const Home = () => {
   useInterval(() => {
     fetchData();
   }, 2000);
-  
 
 
   useEffect(() => {
-    console.log("Data refresh triggered...");
     fetchData();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getSource]);
 
@@ -322,17 +319,17 @@ const Home = () => {
 
   // Refresh data every 2 seconds
   useInterval(() => {
-    fetchData1();
+    fetchData2();
   }, 2000);
 
 
   useEffect(() => {
-    fetchData1();
+    fetchData2();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getBusBar]);
 
 
-  const fetchData1 = async () => {
+  const fetchData2 = async () => {
     try {
       const newItems = Array(1).fill(null);
       await Promise.all(getBusBar.map(async (bus) => {
@@ -351,6 +348,8 @@ const Home = () => {
     }
   };
 
+  console.log(droppedBusBarItems)
+
   // ----------------------------- fetch the load data-------------------------------
 
   // const queryClient = useQueryClient(); // Initialize queryClient
@@ -362,20 +361,21 @@ const Home = () => {
     }
   });
 
+
+
   // Refresh data every 2 seconds
   useInterval(() => {
-    fetchData2();
+    fetchData1();
   }, 2000);
 
 
   useEffect(() => {
-    console.log("Data refresh triggered...");
-    fetchData2();
+    fetchData1();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getLoad]);
 
 
-  const fetchData2 = async () => {
+  const fetchData1 = async () => {
     try {
       const newItems = Array(8).fill(null); // Initialize an array to hold fetched items
       await Promise.all(getLoad.map(async (load) => {
@@ -502,7 +502,7 @@ const Home = () => {
                   <div key={item?.position}>
                     <div
                       key={index}
-                      className="flex-shrink-0 w-full min-h-[80px] max-h-full rounded-lg border-[3px] mt-[100px] flex justify-center items-center bg-green-600 relative"
+                      className="flex-shrink-0 w-full min-h-[80px] max-h-full rounded-lg border-[3px] flex justify-center items-center bg-green-600 relative"
                     >
                       <div className="absolute top-0 right-0 bg-white rounded-full p-1">{item.position}</div>
                       <div className="text-center">
@@ -517,9 +517,9 @@ const Home = () => {
         </div>
 
         {/* -----------------bottom dropbox functionality----------------------------- */}
-        <div className="flex-1 pl-4 pt-4 mt-[100px]">
+        <div className="flex-1 pl-4 pt-4 ">
           <div style={{ position: "relative" }}>
-            <div className="flex space-x-10 mt-[100px]">
+            <div className="flex space-x-10">
               {droppedBottomItems.map((item, index) => (
                 <div
                   key={`bottom-dropped-item-${index}`}
